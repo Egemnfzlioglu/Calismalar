@@ -236,39 +236,27 @@ const renderUsers = (users = []) => {
 
     document.querySelector("#save").addEventListener("click", updateUser);
 
-    // ###########################
+
+    // ##########################
+    //   TABLO SIRALAMA
+    //   https://stackoverflow.com/questions/14267781/sorting-html-table-with-javascript/49041392?answertab=trending#tab-top
     // ##########################
 
 
+    const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
 
-    let reverseName = document.querySelector(".thName")
+    const comparer = (idx, asc) => (a, b) => ((v1, v2) =>
+        v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
+    )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
 
-    function reverseTable() {
-        tbody.innerHTML = users.map((user, index) => {
-
-            return `<tr>
-            <td class="id"  scope="row">${user.id}</td>
-            <td class="index" scope="row">${index + 1}</td>
-            <td class="name">${user.name}</td>
-            <td class="email">${user.email}</td>
-            <td class="phone">${user.phone}</td>
-            <td class="website">${user.website}</td>
-            <td>
-            <button type="button" class="btn btn-danger btn-sm remove" data-id="${user.id}">Sil</button>
-            <button type="button" class="btn btn-warning btn-sm update" data-id="${user.id}">Düzenle</button>
-            </td>
-           
-        </tr>`
-        }).reverse().join(" ")
-
-        table.appendChild(tbody)
-        userDOM.appendChild(table);
-    }
-
-    reverseName.addEventListener("click", reverseTable)
-
-
-    // ##########################
+    // do the work...
+    document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() => {
+        const table = th.closest('table');
+        const tbody = table.querySelector('tbody');
+        Array.from(tbody.querySelectorAll('tr'))
+            .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
+            .forEach(tr => tbody.appendChild(tr));
+    })));
 
 
 
